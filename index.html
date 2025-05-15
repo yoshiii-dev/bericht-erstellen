@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown to PDF Export</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      max-width: 600px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 1em;
+    }
+    input {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.3em;
+    }
+    button {
+      padding: 0.7em 1.5em;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fill the Form</h1>
+  <form id="userForm">
+    <label>
+      Name:
+      <input type="text" id="name" />
+    </label>
+    <label>
+      Email:
+      <input type="email" id="email" />
+    </label>
+    <label>
+      Message:
+      <input type="text" id="message" />
+    </label>
+    <button type="button" onclick="exportToPDF()">Export to PDF</button>
+  </form>
+
+  <script>
+    const markdownTemplate = `
+# User Information
+
+- **Name**: {{name}}
+- **Email**: {{email}}
+- **Message**: {{message}}
+`;
+
+    function exportToPDF() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      const filledMarkdown = markdownTemplate
+        .replace('{{name}}', name)
+        .replace('{{email}}', email)
+        .replace('{{message}}', message);
+
+      const htmlContent = marked.parse(filledMarkdown);
+
+      const container = document.createElement('div');
+      container.innerHTML = htmlContent;
+
+      html2pdf().from(container).set({
+        margin: 1,
+        filename: 'user_info.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      }).save();
+    }
+  </script>
