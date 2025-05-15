@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Markdown to PDF Export</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <title>Download Markdown</title>
   <style>
     body {
       font-family: sans-serif;
@@ -44,7 +42,7 @@
       Message:
       <input type="text" id="message" />
     </label>
-    <button type="button" onclick="exportToPDF()">Export to PDF</button>
+    <button type="button" onclick="downloadMarkdown()">Download Markdown</button>
   </form>
 
   <script>
@@ -56,26 +54,28 @@
 - **Message**: {{message}}
 `;
 
-    function exportToPDF() {
+    function downloadMarkdown() {
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const message = document.getElementById('message').value.trim();
-    
+
       const filledMarkdown = markdownTemplate
         .replace('{{name}}', name)
         .replace('{{email}}', email)
         .replace('{{message}}', message);
-    
-      const htmlContent = marked.parse(filledMarkdown);
-    
-      const container = document.createElement('div');
-      container.innerHTML = htmlContent;
-    
-      html2pdf().from(container).set({
-        margin: 1,
-        filename: 'user_info.pdf',
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      }).save(); // <- this triggers the download
+
+      const blob = new Blob([filledMarkdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'user_info.md';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
   </script>
+
+</body>
+</html>
