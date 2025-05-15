@@ -60,22 +60,22 @@
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const message = document.getElementById('message').value.trim();
-
+    
       const filledMarkdown = markdownTemplate
         .replace('{{name}}', name)
         .replace('{{email}}', email)
         .replace('{{message}}', message);
-
+    
       const htmlContent = marked.parse(filledMarkdown);
-
+    
       const container = document.createElement('div');
       container.innerHTML = htmlContent;
-
+    
       html2pdf().from(container).set({
         margin: 1,
         filename: 'user_info.pdf',
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      }).save();
+      }).save(); // <- this triggers the download
     }
   </script>
